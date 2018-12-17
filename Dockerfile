@@ -1,6 +1,9 @@
-# MAINTAINER Josh Bradley
-
 FROM ubuntu:18.04
+
+LABEL maintainer="Josh Bradley"
+LABEL project="swat"
+LABEL version="0.1.0"
+LABEL license="MIT"
 
 RUN apt update && apt upgrade -y
 
@@ -45,21 +48,21 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   libxtst6 \
   locales \
   lsb-release \
+  nodejs \
+  npm \
   unzip \
-  wget \
+  wget  \
   xdg-utils
-
-RUN apt install -y nodejs npm
 
 RUN useradd --create-home --user-group --shell /bin/bash headless
 
-RUN npm install --save puppeteer
+RUN npm install --save puppeteer@^1.11.0
 
-RUN npm install --save chrome-har
+RUN npm install --save chrome-har@^0.7.1
 
 WORKDIR /data
 
 USER headless
 
-ENTRYPOINT [ "/bin/bash" ]
-#CMD ["node", "index.js"]
+# ENTRYPOINT [ "/bin/bash" ]
+CMD ["node", "index.js"]

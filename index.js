@@ -3,10 +3,10 @@ const puppeteer = require('puppeteer');
 const { promisify } = require('util');
 const { harFromMessages } = require('chrome-har');
 
-// list to hold events
+// list of events
 const events = [];
 
-// event types to look for
+// list of event types to watch
 const watchedEvents = [
   'Network.dataReceived',
   'Network.loadingFailed',
@@ -22,16 +22,16 @@ const watchedEvents = [
 ];
 
 const grabPerf = async () => {
-  // take in site from environtment var
-  var urltograb = process.env.GRAB_SITE;
+  // take in site from environment var
+  var urlTarget = process.env.GRAB_SITE;
 
   // set snapshot option
   const options = {
-    path: urltograb +'.png',
+    path: urlTarget +'.png',
     fullpage: true
   };
 
-  // set the brower flags
+  // set the browser flags
   // TODO: improve for custom browser args
   const browser = await puppeteer.launch({
     args: [
@@ -41,24 +41,34 @@ const grabPerf = async () => {
     ]
   });
 
+  // create a page
   const page = await browser.newPage();
+
+  // create a Chrome Devtools Protocol session
   const client = await page.target().createCDPSession();
   
   await client.send('Page.enable');
   await client.send('Network.enable');
 
+  // for every watched event, push to to the events list
   watchedEvents.forEach(method => {
     client.on(method, params => {
       events.push({ method, params });
     });
   });
-                                                    
-  await page.goto('https://'+urltograb);
+
+  // load the page from the environment
+  await page.goto('https://'+urlTarget);
+
+  // grab screen shot of rendered page
   await page.screenshot(options);
+
+  // close browser session
   await browser.close();
   
+  // write out all captured events in .har file format
   const har = harFromMessages(events);
-  await promisify(fs.writeFile)(urltograb+'.har', JSON.stringify(har));
+  await promisify(fs.writeFile)(urlTarget+'.har', JSON.stringify(har));
 }
 
 grabPerf();
