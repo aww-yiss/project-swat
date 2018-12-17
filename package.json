@@ -6,8 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aww-yiss/project-swat.git"
+  },
   "author": "Josh Bradley",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aww-yiss/project-swat/issues"
+  },
+  "homepage": "https://github.com/aww-yiss/project-swat#readme",
   "dependencies": {
     "puppeteer": "^1.11.0",
     "chrome-har": "^0.7.1"
